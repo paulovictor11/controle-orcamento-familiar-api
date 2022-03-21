@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Income;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class IncomeController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         try {
             return response()->json(Income::all());
@@ -19,7 +20,7 @@ class IncomeController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         try {
             $this->validate($request, [
@@ -28,15 +29,7 @@ class IncomeController extends Controller
                 'date'        => 'required',
             ]);
 
-            [, $month,] = explode('-', $request->date);
-
-            $firstDayOfMonth = date("Y-{$month}-01");
-            $lastDayOfMonth = date("Y-{$month}-t");
-
-            $isIncomeAlreadySavedInThisMonth = DB::table('incomes')
-                ->where('description', $request->description)
-                ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
-                ->first();
+            $isIncomeAlreadySavedInThisMonth = $this->checkIfIncomeAlreadySavedInThisMonth($request);
 
             if ($isIncomeAlreadySavedInThisMonth) {
                 throw new \Exception('Income already saved this month');
@@ -55,7 +48,7 @@ class IncomeController extends Controller
         }
     }
 
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
         try {
             return response()->json(Income::findOrFail($id));
@@ -90,7 +83,7 @@ class IncomeController extends Controller
         }
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
         try {
             $income = Income::destroy($id);
@@ -107,5 +100,18 @@ class IncomeController extends Controller
                 'message' => $e->getMessage(),
             ], 400);
         }
+    }
+
+    private function checkIfIncomeAlreadySavedInThisMonth(Request $request)
+    {
+        [, $month,] = explode('-', $request->date);
+
+        $firstDayOfMonth = date("Y-{$month}-01");
+        $lastDayOfMonth = date("Y-{$month}-t");
+
+        return DB::table('incomes')
+            ->where('description', $request->description)
+            ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
+            ->first();
     }
 }
