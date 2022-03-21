@@ -65,4 +65,28 @@ class IncomeController extends Controller
             ], 400);
         }
     }
+
+    public function update(int $id, Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'description' => 'required',
+                'value'       => 'required',
+                'date'        => 'required',
+            ]);
+
+            $income = Income::findOrFail($id);
+            $income->fill($request->all());
+            $income->save();
+
+            return response()->json([
+                'message' => 'Income updated successfuly',
+                'data'    => $income,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
 }

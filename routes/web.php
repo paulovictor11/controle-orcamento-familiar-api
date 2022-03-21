@@ -22,4 +22,5 @@ $router->group(['prefix' => '/api/incomes'], function () use ($router) {
     $router->post('', 'IncomeController@store');
 
     $router->get('{id}', 'IncomeController@show');
+    $router->put('{id}', 'IncomeController@update');
 });
