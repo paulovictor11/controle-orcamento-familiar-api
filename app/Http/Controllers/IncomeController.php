@@ -89,4 +89,23 @@ class IncomeController extends Controller
             ], 400);
         }
     }
+
+    public function destroy(int $id)
+    {
+        try {
+            $income = Income::destroy($id);
+
+            if ($income === 0) {
+                throw new \Exception("Can't remove income. Not found in our system.");
+            }
+
+            return response()->json([
+                'message' => 'Income removed successfuly'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
 }

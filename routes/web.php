@@ -23,4 +23,5 @@ $router->group(['prefix' => '/api/incomes'], function () use ($router) {
 
     $router->get('{id}', 'IncomeController@show');
     $router->put('{id}', 'IncomeController@update');
+    $router->delete('{id}', 'IncomeController@destroy');
 });
