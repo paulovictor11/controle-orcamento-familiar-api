@@ -54,4 +54,15 @@ class IncomeController extends Controller
             ], 400);
         }
     }
+
+    public function show(int $id)
+    {
+        try {
+            return response()->json(Income::findOrFail($id));
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
 }
