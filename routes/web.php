@@ -18,5 +18,6 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => '/api/incomes'], function () use ($router) {
+    $router->get('', 'IncomeController@index');
     $router->post('', 'IncomeController@store');
 });

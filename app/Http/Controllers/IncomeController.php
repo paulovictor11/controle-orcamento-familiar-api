@@ -8,6 +8,17 @@ use Illuminate\Support\Facades\DB;
 
 class IncomeController extends Controller
 {
+    public function index()
+    {
+        try {
+            return response()->json(Income::all());
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
     public function store(Request $request)
     {
         try {
