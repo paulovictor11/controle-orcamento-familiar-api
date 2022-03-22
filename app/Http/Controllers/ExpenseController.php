@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Income;
+use App\Models\Expense;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class IncomeController extends Controller
+class ExpenseController extends Controller
 {
     public function index(): JsonResponse
     {
         try {
-            return response()->json(Income::all());
+            return response()->json(Expense::all());
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -29,17 +29,17 @@ class IncomeController extends Controller
                 'date'        => 'required',
             ]);
 
-            $isIncomeAlreadySavedInThisMonth = $this->checkIfIncomeIsAlreadySavedInThisMonth($request);
+            $isExpenseAlreadySavedInThisMonth = $this->checkIfExpenseIsAlreadySavedInThisMonth($request);
 
-            if ($isIncomeAlreadySavedInThisMonth) {
-                throw new \Exception('Income already saved in this month');
+            if ($isExpenseAlreadySavedInThisMonth) {
+                throw new \Exception('Expense already saved in this month');
             }
 
-            $income = Income::create($request->all());
+            $expense = Expense::create($request->all());
 
             return response()->json([
-                'message' => 'Income saved successfuly',
-                'data'    => $income,
+                'message' => 'Expense saved successfuly',
+                'data'    => $expense,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -51,7 +51,7 @@ class IncomeController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            return response()->json(Income::findOrFail($id));
+            return response()->json(Expense::findOrFail($id));
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -68,13 +68,13 @@ class IncomeController extends Controller
                 'date'        => 'required',
             ]);
 
-            $income = Income::findOrFail($id);
-            $income->fill($request->all());
-            $income->save();
+            $expense = Expense::findOrFail($id);
+            $expense->fill($request->all());
+            $expense->save();
 
             return response()->json([
-                'message' => 'Income updated successfuly',
-                'data'    => $income,
+                'message' => 'Expense updated successfuly',
+                'data'    => $expense,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -86,14 +86,14 @@ class IncomeController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
-            $income = Income::destroy($id);
+            $expense = Expense::destroy($id);
 
-            if ($income === 0) {
-                throw new \Exception("Can't remove income. Not found in our system.");
+            if ($expense === 0) {
+                throw new \Exception("Unable to remove expense. Not found in our system.");
             }
 
             return response()->json([
-                'message' => 'Income removed successfuly'
+                'message' => 'Expense removed successfuly'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -102,14 +102,14 @@ class IncomeController extends Controller
         }
     }
 
-    private function checkIfIncomeIsAlreadySavedInThisMonth(Request $request)
+    private function checkIfExpenseIsAlreadySavedInThisMonth(Request $request)
     {
         [, $month,] = explode('-', $request->date);
 
         $firstDayOfMonth = date("Y-{$month}-01");
         $lastDayOfMonth = date("Y-{$month}-t");
 
-        return DB::table('incomes')
+        return DB::table('expenses')
             ->where('description', $request->description)
             ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
             ->first();

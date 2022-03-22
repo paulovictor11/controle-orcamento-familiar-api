@@ -25,3 +25,12 @@ $router->group(['prefix' => '/api/incomes'], function () use ($router) {
     $router->put('{id}', 'IncomeController@update');
     $router->delete('{id}', 'IncomeController@destroy');
 });
+
+$router->group(['prefix' => '/api/expenses'], function () use ($router) {
+    $router->get('', 'ExpenseController@index');
+    $router->post('', 'ExpenseController@store');
+
+    $router->get('{id}', 'ExpenseController@show');
+    $router->put('{id}', 'ExpenseController@update');
+    $router->delete('{id}', 'ExpenseController@destroy');
+});
