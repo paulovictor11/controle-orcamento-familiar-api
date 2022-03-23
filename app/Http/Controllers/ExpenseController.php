@@ -47,7 +47,7 @@ class ExpenseController extends Controller
             return response()->json([
                 'message' => 'Expense saved successfuly',
                 'data'    => $expense,
-            ]);
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -130,7 +130,7 @@ class ExpenseController extends Controller
 
     private function checkIfExpenseIsAlreadySavedInThisMonth(Request $request)
     {
-        [, $month,] = explode('-', $request->date);
+        [$year, $month,] = explode('-', $request->date);
 
         $firstDayOfMonth = date("Y-{$month}-01");
         $lastDayOfMonth = date("Y-{$month}-t");
