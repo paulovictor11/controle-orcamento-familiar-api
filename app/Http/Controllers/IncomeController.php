@@ -109,6 +109,25 @@ class IncomeController extends Controller
         }
     }
 
+    public function getIncomesByMonth(string $year, string $month)
+    {
+        try {
+            $firstDayOfMonth = date("{$year}-{$month}-01");
+            $lastDayOfMonth = date("{$year}-{$month}-t");
+
+            $incomes = DB::table('incomes')
+                ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
+                ->get();
+
+
+            return response()->json($incomes);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
     private function checkIfIncomeIsAlreadySavedInThisMonth(Request $request)
     {
         [, $month,] = explode('-', $request->date);

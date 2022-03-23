@@ -24,6 +24,8 @@ $router->group(['prefix' => '/api/incomes'], function () use ($router) {
     $router->get('{id}', 'IncomeController@show');
     $router->put('{id}', 'IncomeController@update');
     $router->delete('{id}', 'IncomeController@destroy');
+
+    $router->get('{year}/{month}', 'IncomeController@getIncomesByMonth');
 });
 
 $router->group(['prefix' => '/api/expenses'], function () use ($router) {
@@ -33,4 +35,6 @@ $router->group(['prefix' => '/api/expenses'], function () use ($router) {
     $router->get('{id}', 'ExpenseController@show');
     $router->put('{id}', 'ExpenseController@update');
     $router->delete('{id}', 'ExpenseController@destroy');
+
+    $router->get('{year}/{month}', 'ExpenseController@getExpensesByMonth');
 });

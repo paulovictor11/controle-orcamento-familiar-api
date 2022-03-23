@@ -109,6 +109,25 @@ class ExpenseController extends Controller
         }
     }
 
+    public function getExpensesByMonth(string $year, string $month)
+    {
+        try {
+            $firstDayOfMonth = date("{$year}-{$month}-01");
+            $lastDayOfMonth = date("{$year}-{$month}-t");
+
+            $expenses = DB::table('expenses')
+                ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
+                ->get();
+
+
+            return response()->json($expenses);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
     private function checkIfExpenseIsAlreadySavedInThisMonth(Request $request)
     {
         [, $month,] = explode('-', $request->date);
