@@ -38,3 +38,5 @@ $router->group(['prefix' => '/api/expenses'], function () use ($router) {
 
     $router->get('{year}/{month}', 'ExpenseController@getExpensesByMonth');
 });
+
+$router->get('/api/resume/{year}/{month}', 'ResumeController@resumeByMonth');
