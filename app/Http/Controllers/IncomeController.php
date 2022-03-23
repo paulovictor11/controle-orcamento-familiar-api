@@ -9,10 +9,17 @@ use Illuminate\Support\Facades\DB;
 
 class IncomeController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            return response()->json(Income::all());
+            if (isset($request->description)) {
+                $description = $request->description;
+                $incomes = Income::where('description', 'like', "%{$description}%")->get();
+            } else {
+                $incomes = Income::all();
+            }
+
+            return response()->json($incomes);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),

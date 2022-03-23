@@ -9,10 +9,17 @@ use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            return response()->json(Expense::all());
+            if (isset($request->description)) {
+                $description = $request->description;
+                $expenses = Expense::where('description', 'like', "%{$description}%")->get();
+            } else {
+                $expenses = Expense::all();
+            }
+
+            return response()->json($expenses);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),

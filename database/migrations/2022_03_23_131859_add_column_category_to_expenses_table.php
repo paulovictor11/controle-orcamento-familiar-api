@@ -14,7 +14,9 @@ class AddColumnCategoryToExpensesTable extends Migration
     public function up()
     {
         Schema::table('expenses', function (Blueprint $table) {
-            $table->foreignId('category_id')->constrained()->default(1);
+            // $table->foreignId('category_id')->constrained()->default(1);
+            $table->unsignedBigInteger('category_id')->default(1);
+            $table->foreign('category_id')->references('id')->on('categories');
         });
     }
 
