@@ -14,8 +14,7 @@ class IncomeFactory extends Factory
         return [
             'description' => $this->faker->text(50),
             'value' => $this->faker->randomNumber(),
-            'date' => date_format($this->faker->dateTime(), 'Y-m-d'),
-            'category_id' => $this->faker->numberBetween(1, 8),
+            'date' => date_format($this->faker->dateTime(), 'Y-m-d')
         ];
     }
 }

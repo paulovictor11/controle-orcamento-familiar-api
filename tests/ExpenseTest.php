@@ -4,7 +4,7 @@ use App\Models\Expense;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class ExpensesTest extends TestCase
+class ExpenseTest extends TestCase
 {
     public function testIfExpenseRouteIndexIsReturningSuccessfully()
     {
@@ -14,15 +14,11 @@ class ExpensesTest extends TestCase
 
     public function testIfExpenseRouteStoreIsSavingDataAndReturningSuccessfully()
     {
-        $expense = [
-            'description' => 'something special',
-            'value' => 1,
-            'date' => '2022-08-23',
-            'category_id' => 1,
-        ];
+        $expense = Expense::factory()->make();
+        $expense['date'] = '2022-08-23';
 
         $this
-            ->json('POST', '/api/expenses', $expense)
+            ->json('POST', '/api/expenses', $expense->toArray())
             ->seeStatusCode(201)
             ->seeJsonStructure(['message', 'data'])
             ->seeJson(['message' => 'Expense saved successfuly']);
@@ -30,7 +26,7 @@ class ExpensesTest extends TestCase
 
     public function testIfExpenseRouteShowIsReturningSuccessfullyOneInstanceOfModel()
     {
-        $expense = Expense::find(1);
+        $expense = Expense::factory()->create();
         $this
             ->json('GET', '/api/expenses/' . $expense['id'])
             ->seeStatusCode(200)
@@ -39,7 +35,7 @@ class ExpensesTest extends TestCase
 
     public function testIfExpenseRouteUpdateIsUpdatingAndReturningSuccessfully()
     {
-        $expense = Expense::find(1);
+        $expense = Expense::factory()->create();
         $expense['value'] = 2;
 
         $this
@@ -61,7 +57,11 @@ class ExpensesTest extends TestCase
 
     public function testIfExpenseRouteStoreIsBlockingRepeatedInstanceInTheSameMonth()
     {
-        $expense = Expense::find(1);
+        $expense = Expense::factory()->make();
+        $expense['date'] = '2022-08-23';
+
+        $this
+            ->json('POST', '/api/expenses', $expense->toArray());
 
         $this
             ->json('POST', '/api/expenses', $expense->toArray())

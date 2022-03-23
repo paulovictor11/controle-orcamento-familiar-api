@@ -47,7 +47,7 @@ class IncomeController extends Controller
             return response()->json([
                 'message' => 'Income saved successfuly',
                 'data'    => $income,
-            ]);
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
