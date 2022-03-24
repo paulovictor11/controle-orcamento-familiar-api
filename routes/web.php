@@ -17,26 +17,33 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => '/api/incomes'], function () use ($router) {
-    $router->get('', 'IncomeController@index');
-    $router->post('', 'IncomeController@store');
+$router->post('api/login', 'AuthController@login');
+$router->post('api/register', 'AuthController@register');
 
-    $router->get('{id}', 'IncomeController@show');
-    $router->put('{id}', 'IncomeController@update');
-    $router->delete('{id}', 'IncomeController@destroy');
+$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
+    $router->get('me', 'AuthController@me');
 
-    $router->get('{year}/{month}', 'IncomeController@getIncomesByMonth');
+    $router->get('resume/{year}/{month}', 'ResumeController@resumeByMonth');
+
+    $router->group(['prefix' => 'incomes'], function () use ($router) {
+        $router->get('', 'IncomeController@index');
+        $router->post('', 'IncomeController@store');
+
+        $router->get('{id}', 'IncomeController@show');
+        $router->put('{id}', 'IncomeController@update');
+        $router->delete('{id}', 'IncomeController@destroy');
+
+        $router->get('{year}/{month}', 'IncomeController@getIncomesByMonth');
+    });
+
+    $router->group(['prefix' => 'expenses'], function () use ($router) {
+        $router->get('', 'ExpenseController@index');
+        $router->post('', 'ExpenseController@store');
+
+        $router->get('{id}', 'ExpenseController@show');
+        $router->put('{id}', 'ExpenseController@update');
+        $router->delete('{id}', 'ExpenseController@destroy');
+
+        $router->get('{year}/{month}', 'ExpenseController@getExpensesByMonth');
+    });
 });
-
-$router->group(['prefix' => '/api/expenses'], function () use ($router) {
-    $router->get('', 'ExpenseController@index');
-    $router->post('', 'ExpenseController@store');
-
-    $router->get('{id}', 'ExpenseController@show');
-    $router->put('{id}', 'ExpenseController@update');
-    $router->delete('{id}', 'ExpenseController@destroy');
-
-    $router->get('{year}/{month}', 'ExpenseController@getExpensesByMonth');
-});
-
-$router->get('/api/resume/{year}/{month}', 'ResumeController@resumeByMonth');

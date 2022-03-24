@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Expense;
+use App\Models\User;
+use Firebase\JWT\JWT;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
