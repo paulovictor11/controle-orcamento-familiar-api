@@ -21,9 +21,7 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
 
             if (is_null($user) || !Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'message' => 'Invalid Credentials'
-                ], 401);
+                throw new \Exception('Invalid Credentials', 401);
             }
 
             $token = JWT::encode(['user' => $user], env('JWT_SECRET'), 'HS256');
@@ -33,9 +31,11 @@ class AuthController extends Controller
                 'user'  => $user,
             ], 200);
         } catch (\Exception $e) {
+            $code = $e->getCode() === 0 ? 400 : $e->getCode();
             return response()->json([
-                'message' => $e->getMessage()
-            ], 400);
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            ], $code);
         }
     }
 

@@ -5,18 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
 {
+    private Expense $model;
+
+    public function __construct(Expense $model)
+    {
+        $this->model = $model;
+    }
+
     public function index(Request $request): JsonResponse
     {
         try {
             if (isset($request->description)) {
                 $description = $request->description;
-                $expenses = Expense::where('description', 'like', "%{$description}%")->get();
+                $expenses = $this->model
+                    ->where('description', 'like', "%{$description}%")
+                    ->get();
             } else {
-                $expenses = Expense::all();
+                $expenses = $this->model->all();
             }
 
             return response()->json($expenses);
@@ -42,7 +50,7 @@ class ExpenseController extends Controller
                 throw new \Exception('Expense already saved in this month');
             }
 
-            $expense = Expense::create($request->all());
+            $expense = $this->model->create($request->all());
 
             return response()->json([
                 'message' => 'Expense saved successfuly',
@@ -58,7 +66,7 @@ class ExpenseController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            return response()->json(Expense::findOrFail($id));
+            return response()->json($this->model->findOrFail($id));
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -75,7 +83,7 @@ class ExpenseController extends Controller
                 'date'        => 'required',
             ]);
 
-            $expense = Expense::findOrFail($id);
+            $expense = $this->model->findOrFail($id);
             $expense->fill($request->all());
             $expense->save();
 
@@ -93,7 +101,7 @@ class ExpenseController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
-            $expense = Expense::destroy($id);
+            $expense = $this->model->destroy($id);
 
             if ($expense === 0) {
                 throw new \Exception("Unable to remove expense. Not found in our system.");
@@ -115,10 +123,10 @@ class ExpenseController extends Controller
             $firstDayOfMonth = date("{$year}-{$month}-01");
             $lastDayOfMonth = date("{$year}-{$month}-t");
 
-            $expenses = DB::table('expenses')
+            $expenses = $this->model
+                ->query()
                 ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
                 ->get();
-
 
             return response()->json($expenses);
         } catch (\Exception $e) {
@@ -130,12 +138,13 @@ class ExpenseController extends Controller
 
     private function checkIfExpenseIsAlreadySavedInThisMonth(Request $request)
     {
-        [$year, $month,] = explode('-', $request->date);
+        [, $month,] = explode('-', $request->date);
 
         $firstDayOfMonth = date("Y-{$month}-01");
         $lastDayOfMonth = date("Y-{$month}-t");
 
-        return DB::table('expenses')
+        return $this->model
+            ->query()
             ->where('description', $request->description)
             ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
             ->first();

@@ -5,18 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Income;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class IncomeController extends Controller
 {
+    private Income $model;
+
+    public function __construct(Income $model)
+    {
+        $this->model = $model;
+    }
+
     public function index(Request $request): JsonResponse
     {
         try {
             if (isset($request->description)) {
                 $description = $request->description;
-                $incomes = Income::where('description', 'like', "%{$description}%")->get();
+                $incomes = $this->model->where('description', 'like', "%{$description}%")->get();
             } else {
-                $incomes = Income::all();
+                $incomes = $this->model->all();
             }
 
             return response()->json($incomes);
@@ -42,7 +48,7 @@ class IncomeController extends Controller
                 throw new \Exception('Income already saved in this month');
             }
 
-            $income = Income::create($request->all());
+            $income = $this->model->create($request->all());
 
             return response()->json([
                 'message' => 'Income saved successfuly',
@@ -58,7 +64,7 @@ class IncomeController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            return response()->json(Income::findOrFail($id));
+            return response()->json($this->model->findOrFail($id));
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -75,7 +81,7 @@ class IncomeController extends Controller
                 'date'        => 'required',
             ]);
 
-            $income = Income::findOrFail($id);
+            $income = $this->model->findOrFail($id);
             $income->fill($request->all());
             $income->save();
 
@@ -93,7 +99,7 @@ class IncomeController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
-            $income = Income::destroy($id);
+            $income = $this->model->destroy($id);
 
             if ($income === 0) {
                 throw new \Exception("Can't remove income. Not found in our system.");
@@ -115,7 +121,7 @@ class IncomeController extends Controller
             $firstDayOfMonth = date("{$year}-{$month}-01");
             $lastDayOfMonth = date("{$year}-{$month}-t");
 
-            $incomes = DB::table('incomes')
+            $incomes = $this->model->query()
                 ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
                 ->get();
 
@@ -135,7 +141,7 @@ class IncomeController extends Controller
         $firstDayOfMonth = date("Y-{$month}-01");
         $lastDayOfMonth = date("Y-{$month}-t");
 
-        return DB::table('incomes')
+        return $this->model->query()
             ->where('description', $request->description)
             ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
             ->first();
