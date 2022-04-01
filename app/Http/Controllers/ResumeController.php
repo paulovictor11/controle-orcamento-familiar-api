@@ -2,15 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
+use App\Models\Income;
 use Illuminate\Support\Facades\DB;
 
 class ResumeController extends Controller
 {
+    private Expense $expense;
+    private Income $income;
+
+    public function __construct(Expense $expense, Income $income)
+    {
+        $this->expense = $expense;
+        $this->income = $income;
+    }
+
     public function resumeByMonth(string $year, string $month)
     {
         try {
-            $totalOfIncomesInThisMonth = $this->getTotalInThisMonth('incomes', $year, $month);
-            $totalOfExpensesInThisMonth = $this->getTotalInThisMonth('expenses', $year, $month);
+            $totalOfIncomesInThisMonth = $this->getTotalInThisMonth($this->income, $year, $month);
+            $totalOfExpensesInThisMonth = $this->getTotalInThisMonth($this->expense, $year, $month);
             $totalBalanceByCategory = $this->getTotalOfBalanceByCategory($year, $month);
 
             $endingBalanceInTheMonth = $totalOfIncomesInThisMonth - $totalOfExpensesInThisMonth;
@@ -30,12 +41,13 @@ class ResumeController extends Controller
         }
     }
 
-    private function getTotalInThisMonth(string $table, string $year, string $month)
+    private function getTotalInThisMonth(object $model, string $year, string $month)
     {
         $firstDayOfMonth = date("{$year}-{$month}-01");
         $lastDayOfMonth = date("{$year}-{$month}-t");
 
-        return DB::table($table)
+        return $model
+            ->query()
             ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
             ->sum('value');
     }
@@ -45,16 +57,16 @@ class ResumeController extends Controller
         $firstDayOfMonth = date("{$year}-{$month}-01");
         $lastDayOfMonth = date("{$year}-{$month}-t");
 
-        return DB::select("
-            select c.id, c.name, (
-                select if(isnull(sum(e.value)), 0, sum(e.value))
-                from expenses as e
-                where e.date between ? and ?
-                and c.id = e.category_id
-            ) as total
-            from categories as c
-            group by c.id, c.name
-            order by c.id;
-        ", [$firstDayOfMonth, $lastDayOfMonth]);
+        $query = "select c.id, c.name, (
+            select if(isnull(sum(e.value)), 0, sum(e.value))
+            from expenses as e
+            where e.date between ? and ?
+            and c.id = e.category_id
+        ) as total
+        from categories as c
+        group by c.id, c.name
+        order by c.id;";
+
+        return DB::select($query, [$firstDayOfMonth, $lastDayOfMonth]);
     }
 }
