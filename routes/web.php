@@ -33,7 +33,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
         $router->put('{id}', 'IncomeController@update');
         $router->delete('{id}', 'IncomeController@destroy');
 
-        $router->get('{year}/{month}', 'IncomeController@getIncomesByMonth');
+        $router->get('{year}/{month}', 'IncomeController@getByMonth');
     });
 
     $router->group(['prefix' => 'expenses'], function () use ($router) {
@@ -44,6 +44,6 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
         $router->put('{id}', 'ExpenseController@update');
         $router->delete('{id}', 'ExpenseController@destroy');
 
-        $router->get('{year}/{month}', 'ExpenseController@getExpensesByMonth');
+        $router->get('{year}/{month}', 'ExpenseController@getByMonth');
     });
 });
