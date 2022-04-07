@@ -46,6 +46,13 @@ class ResumeController extends Controller
         $firstDayOfMonth = date("{$year}-{$month}-01");
         $lastDayOfMonth = date("{$year}-{$month}-t");
 
+        if (
+            !$this->validateDate($firstDayOfMonth) ||
+            !$this->validateDate($lastDayOfMonth)
+        ) {
+            throw new \Exception('Invalid Date');
+        }
+
         return $model
             ->query()
             ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
@@ -56,6 +63,13 @@ class ResumeController extends Controller
     {
         $firstDayOfMonth = date("{$year}-{$month}-01");
         $lastDayOfMonth = date("{$year}-{$month}-t");
+
+        if (
+            !$this->validateDate($firstDayOfMonth) ||
+            !$this->validateDate($lastDayOfMonth)
+        ) {
+            throw new \Exception('Invalid Date');
+        }
 
         $query = "select c.id, c.name, (
             select if(isnull(sum(e.value)), 0, sum(e.value))
@@ -68,5 +82,12 @@ class ResumeController extends Controller
         order by c.id;";
 
         return DB::select($query, [$firstDayOfMonth, $lastDayOfMonth]);
+    }
+
+    private function validateDate(string $date)
+    {
+        [$year, $month, $day] = explode('-', $date);
+
+        return checkdate($month, $day, $year);
     }
 }
