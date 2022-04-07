@@ -20,7 +20,8 @@ $router->get('/', function () use ($router) {
 $router->post('api/login', 'AuthController@login');
 $router->post('api/register', 'AuthController@register');
 
-$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
+// $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
+$router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('me', 'AuthController@me');
 
     $router->get('resume/{year}/{month}', 'ResumeController@resumeByMonth');

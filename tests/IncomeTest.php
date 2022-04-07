@@ -21,7 +21,7 @@ class IncomeTest extends TestCase
             ->json('POST', '/api/incomes', $income->toArray())
             ->seeStatusCode(201)
             ->seeJsonStructure(['message', 'data'])
-            ->seeJson(['message' => 'Income saved successfuly']);
+            ->seeJson(['message' => 'incomes saved successfuly']);
     }
 
     public function testIfIncomeRouteShowIsReturningSuccessfullyOneInstanceOfModel()
@@ -43,7 +43,7 @@ class IncomeTest extends TestCase
             ->json('PUT', '/api/incomes/' . $income['id'], $income->toArray())
             ->seeStatusCode(200)
             ->seeJsonStructure(['message', 'data'])
-            ->seeJson(['message' => 'Income updated successfuly']);
+            ->seeJson(['message' => 'incomes updated successfuly']);
     }
 
     public function testIfIncomeRouteDestroyIsRemovingInstaceAndReturningSuccessfully()
@@ -53,7 +53,7 @@ class IncomeTest extends TestCase
             ->json('DELETE', '/api/incomes/' . $income['id'])
             ->seeStatusCode(200)
             ->seeJsonStructure(['message'])
-            ->seeJson(['message' => 'Income removed successfuly']);
+            ->seeJson(['message' => 'incomes removed successfuly']);
     }
 
     public function testIfIncomeRouteStoreIsBlockingRepeatedInstanceInTheSameMonth()
@@ -68,6 +68,6 @@ class IncomeTest extends TestCase
             ->json('POST', '/api/incomes', $income->toArray())
             ->seeStatusCode(400)
             ->seeJsonStructure(['message'])
-            ->seeJson(['message' => 'Income already saved in this month']);
+            ->seeJson(['message' => 'incomes already saved in this month']);
     }
 }

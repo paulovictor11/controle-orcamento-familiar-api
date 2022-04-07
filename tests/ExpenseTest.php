@@ -23,7 +23,7 @@ class ExpenseTest extends TestCase
             ->json('POST', '/api/expenses', $expense->toArray())
             ->seeStatusCode(201)
             ->seeJsonStructure(['message', 'data'])
-            ->seeJson(['message' => 'Expense saved successfuly']);
+            ->seeJson(['message' => 'expenses saved successfuly']);
     }
 
     public function testIfExpenseRouteShowIsReturningSuccessfullyOneInstanceOfModel()
@@ -44,7 +44,7 @@ class ExpenseTest extends TestCase
             ->json('PUT', '/api/expenses/' . $expense['id'], $expense->toArray())
             ->seeStatusCode(200)
             ->seeJsonStructure(['message', 'data'])
-            ->seeJson(['message' => 'Expense updated successfuly']);
+            ->seeJson(['message' => 'expenses updated successfuly']);
     }
 
     public function testIfExpenseRouteDestroyIsRemovingInstaceAndReturningSuccessfully()
@@ -54,7 +54,7 @@ class ExpenseTest extends TestCase
             ->json('DELETE', '/api/expenses/' . $expense['id'])
             ->seeStatusCode(200)
             ->seeJsonStructure(['message'])
-            ->seeJson(['message' => 'Expense removed successfuly']);
+            ->seeJson(['message' => 'expenses removed successfuly']);
     }
 
     public function testIfExpenseRouteStoreIsBlockingRepeatedInstanceInTheSameMonth()
@@ -69,6 +69,6 @@ class ExpenseTest extends TestCase
             ->json('POST', '/api/expenses', $expense->toArray())
             ->seeStatusCode(400)
             ->seeJsonStructure(['message'])
-            ->seeJson(['message' => 'Expense already saved in this month']);
+            ->seeJson(['message' => 'expenses already saved in this month']);
     }
 }
