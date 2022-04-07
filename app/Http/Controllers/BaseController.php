@@ -21,9 +21,9 @@ abstract class BaseController extends Controller
                 $description = $request->description;
                 $instance = $this->model
                     ->where('description', 'like', "%{$description}%")
-                    ->get();
+                    ->paginate();
             } else {
-                $instance = $this->model->all();
+                $instance = $this->model->paginate();
             }
 
             return response()->json($instance);
