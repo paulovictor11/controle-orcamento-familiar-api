@@ -19,6 +19,14 @@ class IncomeErrorTest extends TestCase
         ];
     }
 
+    public function testIfIndexRouteReturnsErrorWithNoDescriptionProvided()
+    {
+        $this
+            ->json('GET', '/api/incomes?description', [], $this->headers)
+            ->seeStatusCode(400)
+            ->seeJsonStructure(['message']);
+    }
+
     public function testIfStoreReturnErrorWithNoDataProvided()
     {
         $this

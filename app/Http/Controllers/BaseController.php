@@ -17,11 +17,10 @@ abstract class BaseController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            if (isset($request->description)) {
-                $description = $request->description;
-                $instance = $this->model
-                    ->where('description', 'like', "%{$description}%")
-                    ->paginate();
+            $description = $request->description;
+
+            if (isset($description)) {
+                $instance = $this->findByDescripton($description);
             } else {
                 $instance = $this->model->paginate();
             }
@@ -147,5 +146,16 @@ abstract class BaseController extends Controller
             ->where('description', $request->description)
             ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
             ->first();
+    }
+
+    private function findByDescripton(string $description): object
+    {
+        if (empty($description)) {
+            throw new \Exception('Please provide a description to search');
+        }
+
+        return $this->model
+            ->where('description', 'like', "%{$description}%")
+            ->paginate();
     }
 }
