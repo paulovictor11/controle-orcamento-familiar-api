@@ -8,9 +8,23 @@ use Laravel\Lumen\Testing\DatabaseTransactions;
 
 class ExpenseTest extends TestCase
 {
+    private array $headers;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $user = User::factory()->create();
+        $token = JWT::encode(['user' => $user], env('JWT_SECRET'), 'HS256');
+
+        $this->headers = [
+            'Authorization' => "Bearer {$token}"
+        ];
+    }
+
     public function testIfExpenseRouteIndexIsReturningSuccessfully()
     {
-        $this->json('GET', '/api/expenses')
+        $this->json('GET', '/api/expenses', [], $this->headers)
             ->seeStatusCode(200);
     }
 
@@ -20,7 +34,7 @@ class ExpenseTest extends TestCase
         $expense['date'] = '2022-08-23';
 
         $this
-            ->json('POST', '/api/expenses', $expense->toArray())
+            ->json('POST', '/api/expenses', $expense->toArray(), $this->headers)
             ->seeStatusCode(201)
             ->seeJsonStructure(['message', 'data'])
             ->seeJson(['message' => 'expenses saved successfuly']);
@@ -30,7 +44,7 @@ class ExpenseTest extends TestCase
     {
         $expense = Expense::factory()->create();
         $this
-            ->json('GET', '/api/expenses/' . $expense['id'])
+            ->json('GET', '/api/expenses/' . $expense['id'], [], $this->headers)
             ->seeStatusCode(200)
             ->seeJsonStructure(['id', 'description', 'value', 'date', 'category_id']);
     }
@@ -41,7 +55,7 @@ class ExpenseTest extends TestCase
         $expense['value'] = 2;
 
         $this
-            ->json('PUT', '/api/expenses/' . $expense['id'], $expense->toArray())
+            ->json('PUT', '/api/expenses/' . $expense['id'], $expense->toArray(), $this->headers)
             ->seeStatusCode(200)
             ->seeJsonStructure(['message', 'data'])
             ->seeJson(['message' => 'expenses updated successfuly']);
@@ -51,7 +65,7 @@ class ExpenseTest extends TestCase
     {
         $expense = Expense::factory()->create();
         $this
-            ->json('DELETE', '/api/expenses/' . $expense['id'])
+            ->json('DELETE', '/api/expenses/' . $expense['id'], [], $this->headers)
             ->seeStatusCode(200)
             ->seeJsonStructure(['message'])
             ->seeJson(['message' => 'expenses removed successfuly']);
@@ -63,10 +77,10 @@ class ExpenseTest extends TestCase
         $expense['date'] = '2022-08-23';
 
         $this
-            ->json('POST', '/api/expenses', $expense->toArray());
+            ->json('POST', '/api/expenses', $expense->toArray(), $this->headers);
 
         $this
-            ->json('POST', '/api/expenses', $expense->toArray())
+            ->json('POST', '/api/expenses', $expense->toArray(), $this->headers)
             ->seeStatusCode(400)
             ->seeJsonStructure(['message'])
             ->seeJson(['message' => 'expenses already saved in this month']);
