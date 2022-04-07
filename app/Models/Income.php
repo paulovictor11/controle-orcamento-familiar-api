@@ -10,4 +10,5 @@ class Income extends Model
     use HasFactory;
 
     protected $fillable = ['description', 'value', 'date'];
+    protected $hidden = ['created_at', 'updated_at'];
 }

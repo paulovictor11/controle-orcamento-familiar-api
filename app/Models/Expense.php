@@ -10,7 +10,6 @@ class Expense extends Model
     use HasFactory;
 
     protected $fillable = ['description', 'value', 'date', 'category_id'];
-
     protected $hidden = ['created_at', 'updated_at'];
 
     public function category()
