@@ -25,6 +25,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->get('me', 'AuthController@me');
 
     $router->get('resume/{year}/{month}', 'ResumeController@resumeByMonth');
+    $router->get('categories', 'CategoryController@index');
 
     $router->group(['prefix' => 'incomes'], function () use ($router) {
         $router->get('', 'IncomeController@index');
